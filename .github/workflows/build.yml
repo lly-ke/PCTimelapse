@@ -1,0 +1,64 @@
+name: Build macOS App
+
+on:
+  push:
+    branches: [ main ]
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: macos-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Xcode
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: latest-stable
+    
+    - name: Install create-dmg
+      run: brew install create-dmg
+      
+    - name: Build
+      run: |
+        xcodebuild -project PCTimelapse.xcodeproj \
+          -scheme PCTimelapse \
+          -configuration Release \
+          -derivedDataPath build \
+          -archivePath build/PCTimelapse.xcarchive \
+          archive
+    
+    - name: Create DMG
+      run: |
+        APP_PATH="build/Build/Products/Release/PCTimelapse.app"
+        DMG_PATH="build/PCTimelapse.dmg"
+        
+        # 创建 DMG
+        create-dmg \
+          --volname "PCTimelapse" \
+          --window-pos 200 120 \
+          --window-size 800 400 \
+          --icon-size 100 \
+          --icon "PCTimelapse.app" 200 190 \
+          --hide-extension "PCTimelapse.app" \
+          --app-drop-link 600 185 \
+          "$DMG_PATH" \
+          "$APP_PATH"
+    
+    - name: Upload DMG artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: PCTimelapse
+        path: build/PCTimelapse.dmg
+    
+    # 如果是发布标签，则创建 Release
+    - name: Create Release
+      if: startsWith(github.ref, 'refs/tags/')
+      uses: softprops/action-gh-release@v1
+      with:
+        files: build/PCTimelapse.dmg
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
