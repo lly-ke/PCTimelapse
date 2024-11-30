@@ -1,13 +1,13 @@
 //
-//  GazeTrackerUITestsLaunchTests.swift
-//  GazeTrackerUITests
+//  PCTimelapseUITestsLaunchTests.swift
+//  PCTimelapseUITests
 //
 //  Created by llyke on 2024/11/29.
 //
 
 import XCTest
 
-final class GazeTrackerUITestsLaunchTests: XCTestCase {
+final class PCTimelapseUITestsLaunchTests: XCTestCase {
 
     override class var runsForEachTargetApplicationUIConfiguration: Bool {
         true

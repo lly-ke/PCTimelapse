@@ -1,13 +1,13 @@
 //
-//  GazeTrackerUITests.swift
-//  GazeTrackerUITests
+//  PCTimelapseUITests.swift
+//  PCTimelapseUITests
 //
 //  Created by llyke on 2024/11/29.
 //
 
 import XCTest
 
-final class GazeTrackerUITests: XCTestCase {
+final class PCTimelapseUITests: XCTestCase {
 
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.
