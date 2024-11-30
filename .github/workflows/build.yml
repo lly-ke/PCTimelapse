@@ -75,10 +75,11 @@ jobs:
           "build/dmg/"
     
     - name: Upload DMG artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: PCTimelapse
         path: build/PCTimelapse.dmg
+        compression-level: 0  # DMG已经压缩过，不需要再压缩
     
     # 如果是发布标签，则创建 Release
     - name: Create Release
