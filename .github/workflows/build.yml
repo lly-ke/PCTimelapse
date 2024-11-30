@@ -27,14 +27,37 @@ jobs:
         xcodebuild -project PCTimelapse.xcodeproj \
           -scheme PCTimelapse \
           -configuration Release \
-          -derivedDataPath build \
           -archivePath build/PCTimelapse.xcarchive \
           archive
+        
+        # Export archive to app
+        xcodebuild -archivePath build/PCTimelapse.xcarchive \
+          -exportArchive \
+          -exportPath build/export \
+          -exportOptionsPlist exportOptions.plist
     
     - name: Create DMG
       run: |
-        APP_PATH="build/Build/Products/Release/PCTimelapse.app"
+        # Create exportOptions.plist
+        cat > exportOptions.plist << EOF
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+        <plist version="1.0">
+        <dict>
+            <key>method</key>
+            <string>developer-id</string>
+            <key>teamID</key>
+            <string>${{ secrets.TEAM_ID }}</string>
+        </dict>
+        </plist>
+        EOF
+        
+        APP_PATH="build/export/PCTimelapse.app"
         DMG_PATH="build/PCTimelapse.dmg"
+        
+        # 创建临时目录用于DMG
+        mkdir -p build/dmg
+        cp -r "$APP_PATH" build/dmg/
         
         # 创建 DMG
         create-dmg \
@@ -46,7 +69,7 @@ jobs:
           --hide-extension "PCTimelapse.app" \
           --app-drop-link 600 185 \
           "$DMG_PATH" \
-          "$APP_PATH"
+          "build/dmg/"
     
     - name: Upload DMG artifact
       uses: actions/upload-artifact@v3
